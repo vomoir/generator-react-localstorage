@@ -1,0 +1,57 @@
+{
+  "name": "generator-react-localstorage",
+  "version": "1.0.0",
+  "description": "generate a fully working react app using localstorage",
+  "author": "Tony Edwards",
+  "main": "index.js",
+  "type": "module",
+  "module": "dist/react-lib.esm.js",
+  "jsnext:main": "dist/react-lib.esm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "yeoman-generator",
+    "yeoman",
+    "generator",
+    "inception",
+    "init",
+    "create",
+    "boilerplate"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "github:vomoir/generator-react-localstorage.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "yeoman-generator": "^7.3.2"
+  },
+  "eslintConfig": {
+    "extends": [
+      "xo-space/esnext",
+      "prettier"
+    ],
+    "env": {
+      "jest": true,
+      "node": true
+    },
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "singleQuote": true,
+          "printWidth": 90
+        }
+      ]
+    },
+    "plugins": [
+      "prettier"
+    ]
+  },
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/vomoir/generator-test-component/issues"
+  },
+  "homepage": "https://github.com/vomoir/generator-test-component#readme"
+}
