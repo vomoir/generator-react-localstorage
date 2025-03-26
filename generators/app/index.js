@@ -1,5 +1,6 @@
 import Generator from "yeoman-generator";
-// import { glob, globSync, globStream, globStreamSync, Glob } from "glob";
+import chalk from "chalk";
+import yosay from "yosay";
 
 export default class extends Generator {
   initializing() {
@@ -12,11 +13,24 @@ export default class extends Generator {
   }
 
   async prompting() {
+    let msgText =
+        "This generator will scaffold a functioning React project with localstorage support for you.\n\n";
+      msgText +=
+        "It will create a new folder with the name you specify, and populate it with the necessary files.\n";
+      msgText +=
+        "It will also optionally install the necessary dependencies.";
+      this.log(
+        yosay(
+          chalk.red.bold("Welcome to the React Localstorage Project generator!\n\n") +
+            chalk.whiteBright(msgText)
+        )
+      );
+
     this.answers = await this.prompt([
       {
         type: "input",
-        name: "componentName",
-        message: "Your Component name",
+        name: "fullReactLocalstorageAppNAme",
+        message: "Your React Localstorage app name",
         default: this.appname, // Default to current folder name
         store: true,
       },
@@ -24,7 +38,7 @@ export default class extends Generator {
         type: "input",
         name: "appTitle",
         message: "What is the title of your app? (will appear in headings etc)",
-        default: this.appname, // Default to current folder name
+        default: this.fullReactLocalstorageAppNAme ? this.fullReactLocalstorageAppNAme : this.appname, // Default to current folder name
         store: true,
       },
       {
@@ -32,7 +46,7 @@ export default class extends Generator {
         name: "srcDir",
         message: "Use a 'src' folder?",
         default: false,
-        sore: true,
+        store: true,
       },
       {
         type: "input",
@@ -51,7 +65,11 @@ export default class extends Generator {
   }
 
   writing() {
-    const { componentName, assetsFolder, srcDir, appTitle } = this.answers;
+    const { fullReactLocalstorageAppName, assetsFolder, srcDir, appTitle } = this.answers;
+
+    //  Make sure there's no spaces in application name (and lowercase)
+    const nextJsAppName = fullReactLocalstorageAppName.replace(/\s+/g, "_").toLowerCase();
+
     this.log(`Assets folder: ${assetsFolder}`);
     this.destinationRoot(this.destinationPath(componentName));
 
@@ -59,61 +77,64 @@ export default class extends Generator {
     if (srcDir) {
       srcPath = "src/app";
     }
+    //  Copy files in 'env' folder that don't need renaming
+    this.fs.copyTpl(
+      this.templatePath("environment/*"),
+      this.destinationPath(""),
+      { srcPath: srcPath, appTitle: appTitle }
+    );
 
+    //  Copy individual config files that need a '.' prepended to their name
     this.fs.copy(
-      this.templatePath("env/gitignore"),
+      this.templatePath("environment/dotconfigfiles/gitignore"),
       this.destinationPath(".gitignore")
     );
 
     this.fs.copy(
-      this.templatePath("env/editorconfig"),
+      this.templatePath("environment/dotconfigfiles/editorconfig"),
       this.destinationPath(".editorconfig")
     );
 
     this.fs.copy(
-      this.templatePath("env/eslintignore"),
+      this.templatePath("environment/dotconfigfiles/eslintignore"),
       this.destinationPath(".eslintignore")
     );
 
     this.fs.copy(
-      this.templatePath("env/prettier.config.js"),
-      this.destinationPath("prettier.config.js")
+      this.templatePath("environment/dotconfigfiles/env"),
+      this.destinationPath(".env")
     );
 
-    this.fs.copy(
-      this.templatePath("env/auth.config.ts"),
-      this.destinationPath("auth.config.ts")
-    );
-
-    this.fs.copy(
-      this.templatePath("env/connect.js"),
-      this.destinationPath("connect.js")
-    );
-
-    this.fs.copy(
-      this.templatePath("env/placeholder-data.js"),
-      this.destinationPath("placeholder-data.js")
-    );
-
+    this.log("***copied environment folder");
     // Creates a file from scratch:
     // this.fs.write(this.destinationPath("FRUNOBULAX.txt"), `# ${componentName}`);
 
-    this.fs.copyTpl(
-      this.templatePath("env/tsconfig.json"),
-      this.destinationPath("tsconfig.json"),
-      { srcPath: srcPath }
+    //  Copy individual config files that need a '.' prepended to their name
+    this.fs.copy(
+      this.templatePath("environment/dotconfigfiles/gitignore"),
+      this.destinationPath(".gitignore")
     );
 
-    this.fs.copyTpl(
-      this.templatePath("env/tailwind.config.ts"),
-      this.destinationPath("tailwind.config.ts"),
-      { srcPath: srcPath }
+    this.fs.copy(
+      this.templatePath("environment/dotconfigfiles/editorconfig"),
+      this.destinationPath(".editorconfig")
     );
 
-    this.fs.copyTpl(
-      this.templatePath("env/auth.ts"),
-      this.destinationPath("auth.ts"),
-      { srcPath: srcPath }
+    this.fs.copy(
+      this.templatePath("environment/dotconfigfiles/eslintignore"),
+      this.destinationPath(".eslintignore")
+    );
+
+    this.fs.copy(
+      this.templatePath("environment/dotconfigfiles/env"),
+      this.destinationPath(".env")
+    );
+
+    this.log("***copied environment folder");
+
+    this.fs.copy(
+      this.templatePath("template_package.json"),
+      this.destinationPath("package.json")
     );
 
     this.fs.copyTpl(
